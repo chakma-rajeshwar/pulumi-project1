@@ -22,3 +22,13 @@ public_subnet = aws.ec2.Subnet("public-subnet",
 )
 
 pulumi.export("public_subnet_id", public_subnet.id)
+
+# Create an Internet Gateway
+igw = aws.ec2.InternetGateway("internet-gateway",
+    vpc_id=vpc.id,
+    tags={
+        "Name": "igw"
+    }
+)
+
+pulumi.export("igw_id", igw.id)
