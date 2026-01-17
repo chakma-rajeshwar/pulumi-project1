@@ -32,3 +32,26 @@ igw = aws.ec2.InternetGateway("internet-gateway",
 )
 
 pulumi.export("igw_id", igw.id)
+
+# Create a route table
+public_route_table = aws.ec2.RouteTable("public-route-table",
+    vpc_id=vpc.id,
+    tags={
+        "Name": "rt-public"
+    }
+)
+
+# Create a route in the route table for the Internet Gateway
+route = aws.ec2.Route("igw-route",
+    route_table_id=public_route_table.id,
+    destination_cidr_block="0.0.0.0/0",
+    gateway_id=igw.id
+)
+
+# Associate the route table with the public subnet
+route_table_association = aws.ec2.RouteTableAssociation("public-route-table-association",
+    subnet_id=public_subnet.id,
+    route_table_id=public_route_table.id
+)
+
+pulumi.export("public_route_table_id", public_route_table.id)
